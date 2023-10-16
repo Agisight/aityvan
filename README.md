@@ -28,4 +28,6 @@ If you want to deploy another NLLB-based translation model,
 just change the `MODEL_URL` in the `translation.py` file.
 You may also want to adjust the `LANGUAGES` register in the same file.
 
+## Preventing downloading for each docker build
+To prevent downloading of the big model archive, download it once and place just over `place-nllb-rus-tyv-v2-extvoc` folder and use folder name as `MODEL_URL` in `translation.py`
 
