@@ -1,0 +1,157 @@
+<html lang="tyv">
+<title>ИИ переводчик с русского на тувинский</title>
+<hr>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.7.1.min.js"></script>
+<style type="text/css">
+            dummydeclaration { padding-left: 4em; } /* Firefox ignores first declaration for some reason */
+            /*p {padding-left: 2em;}*/
+            i.mw {color: red; style: bold;}
+            tab1 { padding-left: 4em; }
+            tab1 { padding-left: 5em; }
+        </style>
+
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" type="text/css" href="https://ai.tyvan.ru/static/styles/style.css">
+  <link rel="stylesheet" type="text/css" href="https://ai.tyvan.ru/static/styles/style2.css">
+  <div style='margin:8px;'>
+    <h2>Работает на базе искусственного интеллекта.</h2>
+    <div>
+<!--      <input type='checkbox' accesskey="0" style="width: 32px; height: 32px; vertical-align: middle;" class="dir" id="dir" name="dir">-->
+<!--      <label id="fromRussian" onClick="goSwitch();">Русско-тувинский переводчик</label>-->
+    </div>
+    <form action="" method="post" name="formname">
+      <p style='width:100%;'>
+      <div id="firstLine">Введите текст на русском:</div>
+      </p>
+      <textarea class="sos" style="min-width: 300px;min-height: 200px;" required name="sos" type="text" id="sos" rows="1" placeholder="Орустап" /></textarea>
+      <h2 id="secondLine">Перевод на тувинский:</h2>
+      <div class="RuBkg">
+        <div class="RuText" name="slovo" type="text" id="slovo" placeholder="Тыва очулгазы" />
+        </div>
+      </div>
+    </form>
+  </div>
+
+<script>
+var typingTimer;
+var doneTypingInterval = 350;
+
+$("#sos").on("input", function () {
+    window.clearTimeout(typingTimer);
+    typingTimer = window.setTimeout(main, doneTypingInterval);
+});
+
+function goSwitch(){
+ $("#dir").click();
+}
+
+function check(){
+ main ();
+}
+
+function directionTip(dir=false) {
+    var hotkeyTip;
+    if (window.navigator.userAgentData.platform == "macOS") {
+        hotkeyTip = "Control + Option + 0";
+    } else if (window.navigator.userAgentData.platform == "") {
+        if (dir) {
+            return "Орус-тыва очулга.";
+        } else {
+            return "Русско-тувинский переводчик.";
+        }
+    } else {
+        hotkeyTip = "Alt + Shift + 0";
+    }
+    
+    if (dir) {
+        return `Орус-тыва очулга (Солуурда: ${hotkeyTip})`;
+    } else {
+        return `Русско-тувинский переводчик (Сменить язык: ${hotkeyTip})`;
+    }
+}
+
+$('.dir').click(function(event) {
+    var dir = document.getElementById('dir').checked;
+
+    let changeDirLabel = directionTip(dir);
+    if (dir) {
+        document.getElementById('firstLine').innerHTML = 'Введите по-русски';
+        document.getElementById('secondLine').innerHTML = 'Перевод на тувинский язык';
+        document.getElementById('sos').placeholder = 'На русском';
+        document.getElementById('slovo').placeholder = 'На тувинском';
+        document.getElementById('fromRussian').innerHTML = changeDirLabel;
+    } else {
+        document.getElementById('firstLine').innerHTML = 'Тывалап киириңер';
+        document.getElementById('secondLine').innerHTML = 'Орус дылда очулгазы';
+        document.getElementById('sos').placeholder = 'Тывалап';
+        document.getElementById('slovo').placeholder = 'Орус очулгазы';
+        document.getElementById('fromRussian').innerHTML = changeDirLabel;
+    }
+
+    main ();
+});
+
+$('.button').click(function(event) {
+    event.preventDefault();
+    main ();
+});
+
+function main () {
+    var sos = document.getElementById('sos').value;
+    
+    var a = sos.trim();
+    
+    if (a == "")
+        return;
+
+        var data = {
+          "text": sos,
+          "src_lang": "rus_Cyrl",
+          "tgt_lang": "tyv_Cyrl",
+          "by_sentence": true,
+          "preprocess": true
+        };
+
+         $.ajax({
+          url: "https://ai.tyvan.ru/translate",
+          type: "POST",
+          contentType: "application/json",
+          dataType: "json",
+          accepts: {text: "application/json"},
+          data: JSON.stringify(data),
+          beforeSend: function(xhr){
+              xhr.setRequestHeader("Content-Type","application/json");
+              xhr.setRequestHeader("Accept","application/json");
+          },
+          success: function( data ) {
+            if (data == 0) {
+            alert ("Алдаг: болдунмайн барды");
+            return;
+            }
+            var text = data['translation'];
+            
+            document.getElementById('slovo').innerHTML = "";
+            addRow(text);
+
+          },
+          error: function(xhr, status, error) {
+             // check status && error
+          }
+        })
+}
+
+function addRow(htmlstring) {
+    var div = document.createElement('div');
+
+    div.className = 'row';
+    div.innerHTML = htmlstring;
+
+    document.getElementById('slovo').appendChild(div);
+}
+
+function removeRow(input) {
+    document.getElementById('slovo').removeChild(input.parentNode);
+}
+
+</script>
