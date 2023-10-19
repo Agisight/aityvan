@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 import typing as tp
@@ -9,7 +10,11 @@ from sentence_splitter import SentenceSplitter
 from transformers import AutoModelForSeq2SeqLM, NllbTokenizer
 
 MODEL_URL = "slone/nllb-rus-tyv-v2-extvoc" # nllb-rus-tyv-v1
-MODEL_URL = "nllb-rus-tyv-v2-extvoc"
+# Within the docker, instead of downloading the model or reading it in cache, we use a copy created by dockerfile
+MODEL_URL_LOCAL = "/model/nllb-rus-tyv-v2-extvoc"
+if os.path.exists(MODEL_URL_LOCAL):
+    MODEL_URL = MODEL_URL_LOCAL
+
 LANGUAGES = {
     "Орус | Русский | Russian": "rus_Cyrl",
     "Тыва | Тувинский | Tyvan": "tyv_Cyrl",

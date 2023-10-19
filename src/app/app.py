@@ -72,5 +72,10 @@ with gr.Blocks(theme=gr.themes.Default(primary_hue="green", secondary_hue="yello
     direction_btn.click(fn=changeDir, outputs=[direction_btn, topTextView, output, submitButton], api_name="changeDir")
     submitButton.click(fn=goTranslate, inputs=topTextView, outputs=output, api_name="goTranslate")
 
+    gr.Markdown("""
+    This translator is powered by the neural network model https://huggingface.co/slone/nllb-rus-tyv-v2-extvoc based on NLLB-200.
+    """)
+
+
 if __name__ == "__main__":
     demo.launch()
