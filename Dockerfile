@@ -5,6 +5,7 @@ FROM python:3.9
 WORKDIR /code
 
 # Copy the current directory contents into the container at /code
+COPY nllb-rus-tyv-v2-extvoc /model/nllb-rus-tyv-v2-extvoc
 COPY ./requirements.txt /code/requirements.txt
 
 # Install requirements.txt

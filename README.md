@@ -8,6 +8,9 @@ https://medium.com/@cointegrated/how-to-fine-tune-a-nllb-200-model-for-translati
 ## Prerequisites
 Docker. A few gigabytes of memory.
 
+If you want to speedup the building of the docker image, you can pre-download the model: run `download_model.sh` 
+Please make sure that you have `git` and `git-lfs` installed first.
+
 ## How to run
 
 Build a Docker image called "nllb" (from the current directory): 
