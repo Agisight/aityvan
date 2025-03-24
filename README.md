@@ -8,10 +8,15 @@ https://medium.com/@cointegrated/how-to-fine-tune-a-nllb-200-model-for-translati
 ## Prerequisites
 Docker. A few gigabytes of memory.
 
-If you want to speedup the building of the docker image, you can pre-download the model: run `download_model.sh` 
+If you want to speedup the building of the docker image, you can pre-download the model: run `download_model.py` 
 Or run like here:
 ```
-sh download_model.sh
+python download_model.py
+```
+
+This requires the `huggingface_hub` library, install it if you don't have it yet:
+```
+pip install huggingface_hub
 ```
 
 Please make sure that you have `git` and `git-lfs` installed first.
