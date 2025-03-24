@@ -1,0 +1,6 @@
+nllb-rus-tyv-v2-extvoc/.git
+.git
+
+__pycache__/
+
+*.pyc
