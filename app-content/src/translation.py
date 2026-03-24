@@ -74,13 +74,8 @@ def fix_tokenizer(tokenizer, new_lang="tyv_Cyrl"):
     )
 
     tokenizer.fairseq_tokens_to_ids.update(tokenizer.lang_code_to_id)
-    # fairseq_ids_to_tokens is now auto-derived from fairseq_tokens_to_ids
-    # in newer transformers, so we skip setting it directly
     if new_lang not in tokenizer._additional_special_tokens:
         tokenizer._additional_special_tokens.append(new_lang)
-    # clear the added token encoder; otherwise a new token may end up there by mistake
-    tokenizer.added_tokens_encoder = {}
-    tokenizer.added_tokens_decoder = {}
 
 
 def sentenize_with_fillers(text, splitter, fix_double_space=True, ignore_errors=False):
