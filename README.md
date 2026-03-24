@@ -36,6 +36,27 @@ docker run  -it -p 7860:7860 nllb
 Now open the browser at http://localhost:7860/docs. 
 It will show you a signature of the method you can use for translation.
 
+## Production setup (systemd)
+
+After testing that the translator works, set up auto-start so it survives reboots and restarts on crash:
+```bash
+bash setup_service.sh
+```
+
+This creates a systemd service with:
+- Auto-restart on crash
+- 8 GB memory limit (protects the host from memory leaks)
+- Auto-start on boot
+
+Management:
+```bash
+systemctl start translator     # Start
+systemctl stop translator      # Stop
+systemctl restart translator   # Restart
+systemctl status translator    # Check status
+journalctl -u translator -f    # View logs
+```
+
 ## How to adapt
 If you want to deploy another NLLB-based translation model, 
 just change the `MODEL_URL` in the `translation.py` file.
