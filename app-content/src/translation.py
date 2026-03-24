@@ -3,6 +3,7 @@ import re
 import sys
 import typing as tp
 import unicodedata
+import gc
 
 import torch
 from sacremoses import MosesPunctNormalizer
@@ -105,6 +106,7 @@ def sentenize_with_fillers(text, splitter, fix_double_space=True, ignore_errors=
 class Translator:
     def __init__(self):
         self.model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_URL, local_files_only=True)
+        self.model.eval()
         if torch.cuda.is_available():
             self.model.cuda()
         self.tokenizer = NllbTokenizer.from_pretrained(MODEL_URL, local_files_only=True)
@@ -166,21 +168,25 @@ class Translator:
         **kwargs,
     ):
         print(text, "Before single translate")
-        self.tokenizer.src_lang = src_lang
-        encoded = self.tokenizer(
-            text, return_tensors="pt", truncation=True, max_length=512
-        )
+        encoded = self.tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
         if max_length == "auto":
             max_length = int(32 + 2.0 * encoded.input_ids.shape[1])
-        generated_tokens = self.model.generate(
-            **encoded.to(self.model.device),
-            forced_bos_token_id=self.tokenizer.lang_code_to_id[tgt_lang],
-            max_length=max_length,
-            num_beams=num_beams,
-            num_return_sequences=n_out or 1,
-            **kwargs,
-        )
+        # Устанавливаем src_lang через input_ids напрямую,
+        # а не через общий tokenizer.src_lang (race condition)
+        encoded.input_ids[0][0] = self.tokenizer.lang_code_to_id[src_lang]
+        with torch.no_grad():
+            generated_tokens = self.model.generate(
+                **encoded.to(self.model.device),
+                forced_bos_token_id=self.tokenizer.lang_code_to_id[tgt_lang],
+                max_length=max_length,
+                num_beams=num_beams,
+                num_return_sequences=n_out or 1,
+                **kwargs,
+            )
         out = self.tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
+        del encoded
+        del generated_tokens
+        gc.collect()
         print(out, "After single translate")
         if isinstance(text, str) and n_out is None:
             return out[0]
