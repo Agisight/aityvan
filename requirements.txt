@@ -1,9 +1,18 @@
-fastapi==0.74.*
-requests==2.27.*
-sentencepiece==0.1.*
-torch==1.11.*
-transformers==4.33.*
-uvicorn[standard]==0.17.*
-sentence-splitter==1.4
-sacremoses== 0.0.45
-gradio==3.50.2
+# requirements.txt — обновлённый с CTranslate2
+# Основные (CTranslate2 режим — без утечки памяти)
+ctranslate2>=4.0.0
+sentencepiece
+sacremoses
+sentence-splitter
+
+# API
+fastapi
+uvicorn[standard]
+gradio
+
+# Fallback (PyTorch — только если CT2 модель не сконвертирована)
+# torch
+# transformers
+
+# Опциональные
+huggingface_hub
